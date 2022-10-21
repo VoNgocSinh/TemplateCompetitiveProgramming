@@ -16,6 +16,7 @@ using namespace std;
 
 int dx[8] = {0,0,1,-1,1,1,-1,-1};
 int dy[8] = {-1,1,0,0,-1,1,-1,1};
+
 ll INF = 1e18;
 ll mod = 1e9+7;
 
@@ -35,9 +36,8 @@ int32_t main(){
         freopen(fn".OUT","w",stdout);
     
     #endif
-  //cin
-  
-  
-  
+//cin
+
     solve();
+//---
 }
