@@ -14,3 +14,21 @@ bool Prime_number(long long n){
 }
 
 ///checking primes
+
+void Elemental_sieve(long long n){
+
+    Es[0] = Es[1] = 1;
+
+    for (int i = 2; i<= sqrt(n); i++)
+        if (!Es[i]){
+
+            long long j = i*i;
+
+            while (j<=n)
+                Es[j] = 1,j+=i;
+
+        }
+
+}
+
+//Elemental sieve
