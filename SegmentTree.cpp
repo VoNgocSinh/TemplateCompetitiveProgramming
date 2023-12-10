@@ -4,10 +4,8 @@ struct SegmentTree
 
     int S[4 * N];
 
-    void build(int id, int l, int r)
-    {
-        if (l == r)
-        {
+    void build(int id, int l, int r) {
+        if (l == r) {
             S[id] = a[l];
             return;
         }
@@ -20,13 +18,11 @@ struct SegmentTree
         S[id] = (S[id * 2] + S[id * 2 + 1]);
     }
 
-    void update(int id, int l, int r, int p, int k)
-    {
+    void update(int id, int l, int r, int p, int k) {
         if (p < l || p > r)
             return;
 
-        if (l == r)
-        {
+        if (l == r) {
             S[id] = k;
             return;
         }
@@ -39,8 +35,7 @@ struct SegmentTree
         S[id] = (S[id * 2] + S[id * 2 + 1]);
     }
 
-    int get(int id, int l, int r, int u, int v)
-    {
+    int get(int id, int l, int r, int u, int v) {
         if (v < l || r < u)
             return 0;
         if (l >= u && r <= v)
