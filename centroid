@@ -1,0 +1,168 @@
+#include<bits/stdc++.h>
+
+#pragma GCC("Ofast")
+#pragma GCC optimize("O3,unroll-loops")
+#pragma GCC target("avx2,bmi,bmi2,popcnt,lzcnt")
+using namespace std;
+
+#define            fi first
+#define            se second
+#define            db double
+#define           ios ios_base::sync_with_stdio(0);cin.tie(0);cout.tie(0);
+#define     inpout(a) freopen(a".inp","r",stdin),freopen(a".out","w",stdout)
+
+template<class A,class B> inline void maximize(A& x, B y) {x = max(x,y);};
+template<class A,class B> inline void minimize(A& x, B y) {x = min(x,y);};
+
+const int N = 2e5+100;
+
+int n, k1, k2;
+long long res;
+vector<int> edge[N];
+
+struct Fenwick
+{
+
+    int cnt[N];
+
+    int get(int so){
+
+        if (so <= 0) return 0;
+
+        int res = 0;
+
+        while (so){
+
+            res += cnt[so];
+            so -= (so & (- so));
+
+        }
+
+        return res;
+
+    }
+
+    void update(int so, int v){
+
+        while (so <= k2){
+
+            cnt[so] += v;
+            so += (so & (- so));
+
+        }
+
+    }
+
+} FW;
+
+
+struct CentroidDecomposition
+{
+
+    int maxh, cnt[N], del[N], child[N];
+
+    void countChild(int u, int par) {
+
+        child[u] = 1;
+        for (int x :edge[u])
+            if (x != par && !del[x]) {
+
+                countChild(x, u);
+                child[u] += child[x];
+
+            } 
+
+    }
+
+    int centroid(int u, int par, int n) {
+
+        for (int x :edge[u])
+            if (x != par && !del[x] && child[x] > n/2)
+                return centroid(x, u, n); 
+
+        return u;
+
+    }
+
+    void dfs(int u, int par, int type, int h, int n) {
+
+
+        if (h > k2) return;
+
+        if (type) 
+            FW.update(h + 1, 1);
+        else 
+            res += FW.get(min(n - 1, min(k2, n) - h) + 1) - FW.get(max(0, k1 - h));
+
+        maximize(maxh, h);
+        for (int x :edge[u])
+            if (x != par && !del[x]) 
+                dfs(x, u, type, h + 1, n);                            
+
+    }
+
+    void solve(int u) {
+
+        countChild(u, -1);
+        int n = child[u];
+        int root = centroid(u, -1, n);
+
+        if (n < k1) return;
+
+        maxh = 0;
+        FW.update(1, 1);
+        // cnt[0] = 1;
+
+        for (int x :edge[root])
+            if (!del[x]) {
+
+                dfs(x, root, 0, 1, n);
+                dfs(x, root, 1, 1, n);
+
+            }
+
+        // cout << root << ' ' << res << ' ' << n << '\n';
+        for (int i = 1; i <= maxh + 1; i++) FW.update(i, - FW.get(i));
+
+        del[root] = 1;
+        for (int x :edge[root])
+            if (!del[x]) solve(x);
+
+    }
+
+} centroid;
+
+bool check() {
+
+    for (int i = 1; i <= n; i++)
+        if (edge[i].size() > 2) return false;
+
+    return true;
+
+}
+
+void komasan(){
+
+    cin >> n >> k1 >> k2;
+
+    for (int i = 1; i < n; i++) {
+
+        int u, v;
+        cin >> u >> v;
+        edge[u].push_back(v);
+        edge[v].push_back(u);
+
+    }
+
+    centroid.solve(1);
+
+    cout << res;
+
+}
+
+int main(){
+    ios;
+    // inpout("test");
+    komasan();
+
+}

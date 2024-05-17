@@ -1,0 +1,94 @@
+// #include <ext/pb_ds/assoc_container.hpp>
+#include<bits/stdc++.h>
+ 
+// using namespace __gnu_pbds;
+using namespace std;
+ 
+// #define ordered_set tree<int, null_type,less_equal<int>, rb_tree_tag,tree_order_statistics_node_update>
+#define            fi first
+#define            se second
+#define            db double
+#define            ll long long
+#define           ull unsigned long long
+#define           ios ios_base::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+#define     inpout(a) freopen(a".inp","r",stdin),freopen(a".out","w",stdout)
+ 
+template<class A,class B> inline void maximize(A& x, B y) {x = max(x, y);};
+template<class A,class B> inline void minimize(A& x, B y) {x = min(x, y);};
+ 
+const long long INF = 1e18;
+const long long mod = 1e9 + 7;
+const int N = 2e5 + 100;
+ 
+//int dx[8] = {0, 0, 1, -1, 1, 1, -1, -1};
+//int dy[8] = {-1, 1, 0, 0, -1, 1, -1, 1};
+ 
+int n, m, k, visited[N], matchA[N], matchB[N];
+vector<int> edge[N];
+ 
+bool dfs(int u) {
+ 
+    visited[u] = 1;
+    for (int x : edge[u]) {
+ 
+        if (!matchB[x] || (!visited[matchB[x]] && dfs(matchB[x]))) {
+ 
+            matchA[u] = x;
+            matchB[x] = u;
+            return true;
+ 
+        }
+ 
+    }
+ 
+    return false;
+ 
+}
+ 
+void komasan() {
+ 
+    cin >> n >> m;  
+    cin >> k;
+ 
+    for (int i = 1; i <= k; i++) {
+ 
+        int a, b;
+        cin >> a >> b;
+        edge[a].push_back(b);
+ 
+    }
+ 
+    bool stop = false;
+ 
+    while (!stop) {
+ 
+        stop = true;
+ 
+        for (int i = 1; i <= n; i++) {
+ 
+            for (int j = 1; j <= n; j++)
+                visited[j] = 0;
+            if (!matchA[i] && dfs(i))
+                stop = false;
+ 
+        }
+ 
+    }
+ 
+    vector<pair<int, int>> ans;
+    for (int i = 1; i <= n; i++)
+        if (matchA[i])
+            ans.push_back(make_pair(i, matchA[i]));
+ 
+    cout << ans.size() << '\n';
+    for (pair<int, int> x : ans)
+        cout << x.fi << ' ' << x.se << '\n';
+ 
+}
+ 
+int main() {
+    ios;
+    //inpout("");
+    komasan();
+ 
+}

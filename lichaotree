@@ -1,0 +1,143 @@
+// #include <ext/pb_ds/assoc_container.hpp>
+#include<bits/stdc++.h>
+
+// using namespace __gnu_pbds;
+using namespace std;
+
+// #define ordered_set tree<int, null_type,less_equal<int>, rb_tree_tag,tree_order_statistics_node_update>
+#define            fi first
+#define            se second
+#define            db double
+#define            ll long long
+#define           ull unsigned long long
+#define           ios ios_base::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+#define     inpout(a) freopen(a".inp","r",stdin),freopen(a".out","w",stdout)
+#define           int ll
+
+template<class A,class B> inline void maximize(A& x, B y) {x = max(x, y);};
+template<class A,class B> inline void minimize(A& x, B y) {x = min(x, y);};
+
+const long long INF = 1e18;
+const long long mod = 1e9 + 7;
+const int N = 2e5 + 100;
+
+//int dx[8] = {0, 0, 1, -1, 1, 1, -1, -1};
+//int dy[8] = {-1, 1, 0, 0, -1, 1, -1, 1};
+
+int n, h[N], w[N], dp[N], P[N];
+
+struct line {
+
+    int a, b;
+
+    line() {
+
+        a = 0;
+        b = INF;
+
+    }
+
+    line(int _a, int _b) {
+
+        a = _a;
+        b = _b;
+
+    }
+
+    int operator() (int x) {
+
+        return a * x + b;
+
+    }
+
+};
+
+const int mxLine = 1e6;
+
+line S[4 * mxLine + 10];
+
+struct LiChaoTree {
+
+    void addLine(int id, int l, int r, line New) {
+
+        if (l == r) {
+
+            if (S[id](l) > New(l))
+                swap(S[id], New);
+            
+            return;
+
+        }
+
+        int mid = (l + r) / 2;
+
+        if (S[id].a > New.a)
+            swap(S[id], New);
+
+        if (S[id](mid) > New(mid)) {
+
+            swap(S[id], New);
+            addLine(id * 2 + 1, mid + 1, r, New);
+
+        } else 
+            addLine(id * 2, l, mid, New);
+
+    }
+
+    int getQuery(int id, int l, int r, int x) {
+
+        if (x < l || x > r)
+            return INF;
+
+        if (l == r)
+            return S[id](x);
+
+        int mid = (l + r) / 2;
+        if (x <= mid)
+            return min(S[id](x), getQuery(id * 2, l, mid, x));
+        else
+            return min(S[id](x), getQuery(id * 2 + 1, mid + 1, r, x));
+
+    }
+
+} LiChao;
+
+
+void komasan() {
+
+    cin >> n;
+    for (int i = 1; i <= n; i++)
+        cin >> h[i];
+    
+    for (int i = 1; i <= n; i++) {
+
+        cin >> w[i];
+        P[i] = P[i - 1] + w[i];
+
+    }
+
+    dp[1] = 0;
+    LiChao.addLine(1, 0, mxLine, line(-2 * h[1], dp[1] - P[1] + h[1] * h[1]));
+
+    for (int i = 2; i <= n; i++) {
+
+        dp[i] = LiChao.getQuery(1, 0, mxLine, h[i]) + P[i - 1] + h[i] * h[i];
+        LiChao.addLine(1, 0, mxLine, line(-2 * h[i], dp[i] - P[i] + h[i] * h[i]));
+
+    }
+
+    cout << dp[n];
+
+}
+
+int32_t main() {
+    ios;
+    //inpout("");
+    komasan();
+
+}
+
+// dp[i] = dp[j] + P[i - 1] - P[j] + h[i] ^ 2 + h[j] ^ 2 - 2 * h[i] * h[j]
+// A = - 2 * h[i]
+// B = dp[j] - P[j] + h[j] ^ 2
+// ADD = P[i - 1] + h[i] ^ 2
